@@ -1,3 +1,15 @@
+#!/usr/bin/python3
+# -*- coding: utf-u -*-
+
+"""
+VocabulaPy
+
+Small python game where you translate words.
+
+author: Daniel Monzonis
+website: github.com/monzo94
+"""
+
 import urllib.request
 import csv
 import json
