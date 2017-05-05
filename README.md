@@ -1,4 +1,4 @@
-Vocabulapy
+VocabulaPy - Python Vocabulary Game
 ==============
 Small game where you have to translate words from one language to another within a time interval. Right now it only works from English to Spanish, but more languages will be added in the future.
 
