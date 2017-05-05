@@ -1,82 +1,46 @@
-import sys
-from PyQt4 import QtGui, QtCore
-from wordDict import *
-from time import sleep
+import urllib.request
+import csv
+import json
+import os.path
 
+# Loads a list of words in English from CSV file and return it
+def loadWordList(filename):
+    with open(filename, 'r') as f:
+        reader = csv.reader(f)
+        wordList = list(reader)[0]
+    # Remove trailing space
+    for word in wordList:
+        wordList[wordList.index(word)] = word.strip()
+    return wordList
 
-class GameWidget(QtGui.QWidget):
+# Translates a word using internet API and return list of valid translations
+def translate(word):
+    translationList = []
+    url = "https://glosbe.com/gapi/translate?from=eng&dest=es&format=json&phrase=%s" % word
+    response = urllib.request.urlopen(url).read()
+    data = json.loads(response)
+    if data['result'] != 'ok':
+        print("Error trying to translate word: %s" % word)
+        return None
+    for translation in data['tuc']:
+        if 'phrase' in translation:
+            translationList.append(translation['phrase']['text'])
+    return translationList
 
-    def __init__(self):
-        super(GameWidget, self).__init__()
-        self.wordPool = ENG_TO_ES_DICT.keys()
-        self.currentWord = self.pullWord()
-        self.createUI()
+# Creates a dictionary of possible translations for given words (keys)
+def createDict(wordList):
+    wordDict = dict()
+    listLength = len(wordList)
+    print("Translating %s words, please be patient" % str(listLength))
+    counter = 1
+    for word in wordList:
+        print("...%s/%s" % (str(counter), str(listLength)))
+        translations = translate(word)
+        wordDict[word] = translations
+        counter += 1
+    print("Done!")
+    return wordDict
 
-    def createUI(self):
-        self.labelWord = QtGui.QLabel(self)
-        self.te = QtGui.QLineEdit(self)
-        self.labelCorrect = QtGui.QLabel(self)
-
-        vbox = QtGui.QVBoxLayout()
-        vbox.addWidget(self.labelWord)
-        vbox.addWidget(self.te)
-        vbox.addWidget(self.labelCorrect)
-
-        self.setLayout(vbox)
-        self.te.editingFinished.connect(self.validate)
-        self.te.setFocus()
-
-        self.labelWord.setText(self.currentWord)
-
-        # Set window parameters and show it
-        self.resize(250, 150)
-        self.center()
-        self.setWindowTitle('Vocabula.py')
-        self.show()
-
-    def closeEvent(self, event):
-        reply = QtGui.QMessageBox.question(self, 'Exit Vocabula.py',
-                                           "Do you really wanna quit?", QtGui.QMessageBox.Yes |
-                                           QtGui.QMessageBox.No, QtGui.QMessageBox.No)
-        if reply == QtGui.QMessageBox.Yes:
-            event.accept()
-        else:
-            event.ignore()
-
-    def center(self):
-        rect = self.frameGeometry()
-        # Get screen center point from the resolution info
-        cp = QtGui.QDesktopWidget().availableGeometry().center()
-        rect.moveCenter(cp)
-        self.move(rect.topLeft())
-
-    def validate(self):
-        guess = self.te.text()
-        if guess in ENG_TO_ES_DICT[self.currentWord]:
-            self.labelCorrect.setText("Correct!")
-            #sleep(1)
-            self.currentWord = self.pullWord()
-            self.labelWord.setText(self.currentWord)
-        else:
-            self.labelCorrect.setText("Try again")
-
-        self.te.setText('')
-        self.te.setFocus()
-
-    def pullWord(self):
-        try:
-            newWord = choice(self.wordPool)
-            self.wordPool.remove(newWord)
-            return newWord
-        except IndexError:
-            return
-
-
-
-def main():
-    app = QtGui.QApplication(sys.argv)
-    widget = GameWidget()
-    sys.exit(app.exec_())
-
-if __name__ == '__main__':
-    main()
+words = loadWordList("qualities.csv")
+d = createDict(words)
+print(d)
