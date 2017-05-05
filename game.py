@@ -2,6 +2,7 @@ import urllib.request
 import csv
 import json
 import os.path
+import pickle
 
 # Loads a list of words in English from CSV file and return it
 def loadWordList(filename):
@@ -41,6 +42,22 @@ def createDict(wordList):
     print("Done!")
     return wordDict
 
-words = loadWordList("qualities.csv")
-d = createDict(words)
+# Creates a game-ready dictionary from a CSV file containing English words, using the Glosbe API
+# to translate them if it wasn't previously generated before and saving it for future use, or loading
+# the previously generated one if it exists
+def loadGameDict(filename):
+    if not os.path.exists(filename):
+        print("Could not find the word file!")
+        return
+    dictFilename = filename[:filename.find('.csv')] + '.dict'
+    if os.path.exists(dictFilename):
+        with open(dictFilename, 'rb') as f:
+            return pickle.load(f)
+    words = loadWordList(filename)
+    wordDict = createDict(words)
+    with open(dictFilename, 'wb') as f:
+        pickle.dump(wordDict, f, protocol=pickle.HIGHEST_PROTOCOL)
+    return wordDict
+
+d = loadGameDict("qualities.csv")
 print(d)
