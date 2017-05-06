@@ -18,7 +18,7 @@ from dictionary_manager import DictionaryManager
 from gui import Ui_GameWindow
 
 class GameWindow(QMainWindow, Ui_GameWindow):
-    def __init__(self, window, dictionaryManager, endlessMode = False):
+    def __init__(self, window, dictionaryManager):
         QMainWindow.__init__(self)
         Ui_GameWindow.__init__(self)
         self.setupUi(window)
@@ -27,11 +27,20 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         self.wordReserve = list(dictionaryManager.dictionary.keys())
         self.word = ""
         self.keyPressed = False
-        self.endlessMode = endlessMode
 
+        self.playButton.clicked.connect(self.startGame)
         self.translateButton.clicked.connect(self.processWord)
 
         self.generateWord()
+
+    def startGame(self):
+        if self.endlessCheckBox.isChecked():
+            self.endlessMode = True
+        else:
+            self.endlessMode = False
+
+        self.correctCount = self.failCount = 0
+        self.stack.setCurrentIndex(1)
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.KeyPress and not self.keyPressed:
@@ -54,8 +63,14 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         self.lineEdit.setFocus()
         if text in self.dManager.dictionary[self.word]:
             self.feedbackText.setText("CORRECT!")
+            self.correctCount += 1
+            self.okText.setText("""<html><head/><body><p><span style=" color:#07c327;">
+                                OK: %s</span></p></body></html>""" % str(self.correctCount))
         else:
-            self.feedbackText.setText("You fail...")
+            self.feedbackText.setText("Incorrect...")
+            self.failCount += 1
+            self.failText.setText("""<html><head/><body><p><span style=" color:#bf0808;">
+                                Fails: %s</span></p></body></html>""" % str(self.failCount))
         if not self.endlessMode and self.wordReserve:
             self.wordReserve.remove(self.word)
         self.generateWord()
