@@ -17,8 +17,10 @@ import os.path
 import pickle
 
 class DictionaryManager:
-    def __init__(self):
-        self.dictionary = {}
+    def __init__(self, filename = None):
+        self.dictionary = dict()
+        if filename:
+            self.load(filename)
 
     # Loads a list of words in English from CSV file and return it
     def readWordList(self, filename):

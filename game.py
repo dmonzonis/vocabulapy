@@ -57,8 +57,7 @@ class GameWindow(QMainWindow, Ui_GameWindow):
 
 
 if __name__ == '__main__':
-    dManager = DictionaryManager()
-    dManager.load('qualities.csv')
+    dManager = DictionaryManager('qualities.csv')
 
     app = QApplication(sys.argv)
     window = QMainWindow()
