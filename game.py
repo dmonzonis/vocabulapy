@@ -18,14 +18,16 @@ from dictionary_manager import DictionaryManager
 from gui import Ui_GameWindow
 
 class GameWindow(QMainWindow, Ui_GameWindow):
-    def __init__(self, window, dictionaryManager):
+    def __init__(self, window, dictionaryManager, endlessMode = False):
         QMainWindow.__init__(self)
         Ui_GameWindow.__init__(self)
         self.setupUi(window)
         qApp.installEventFilter(self)
         self.dManager = dictionaryManager
+        self.wordReserve = list(dictionaryManager.dictionary.keys())
         self.word = ""
         self.keyPressed = False
+        self.endlessMode = endlessMode
 
         self.translateButton.clicked.connect(self.processWord)
 
@@ -42,8 +44,9 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         return super(GameWindow, self).eventFilter(obj, event)
 
     def generateWord(self):
-        self.word = choice(list(self.dManager.dictionary.keys()))
-        self.wordText.setText(self.word.title())
+        if self.wordReserve:
+            self.word = choice(self.wordReserve)
+            self.wordText.setText(self.word.title())
 
     def processWord(self):
         text = self.lineEdit.text()
@@ -53,11 +56,13 @@ class GameWindow(QMainWindow, Ui_GameWindow):
             self.feedbackText.setText("CORRECT!")
         else:
             self.feedbackText.setText("You fail...")
+        if not self.endlessMode and self.wordReserve:
+            self.wordReserve.remove(self.word)
         self.generateWord()
 
 
 if __name__ == '__main__':
-    dManager = DictionaryManager('qualities.csv')
+    dManager = DictionaryManager('test.csv')
 
     app = QApplication(sys.argv)
     window = QMainWindow()
