@@ -10,16 +10,19 @@ author: Daniel Monzonis
 website: github.com/monzo94
 """
 
-import sys, os
+import sys
+import os
 from random import choice
 from PyQt5.QtWidgets import QApplication, QMainWindow, qApp
 from PyQt5.QtCore import Qt, QEvent
 from dictionary_manager import DictionaryManager
 from gui import Ui_GameWindow
 
+
 # Format filename for printing, ex. "basic_words.csv" to "Basic Words"
 def formatFilename(filename):
     return filename[:filename.find('.')].replace('_', ' ').title()
+
 
 class GameWindow(QMainWindow, Ui_GameWindow):
     def __init__(self, window, dictionaryManager):
@@ -30,8 +33,9 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         self.dManager = dictionaryManager
         self.word = ""
         self.keyPressed = False
+        self.gameRunning = False
 
-        #Find all .csv files in the directory
+        # Find all .csv files in the directory
         self.fileList = []
         for file in os.listdir(os.getcwd()):
             if file.endswith(".csv"):
@@ -43,6 +47,7 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         self.translateButton.clicked.connect(self.processWord)
 
     def startGame(self):
+        self.gameRunning = True
         self.dManager.load(self.fileList[self.wordFileList.currentRow()])
         self.wordReserve = list(self.dManager.dictionary.keys())
         if self.endlessCheckBox.isChecked():
@@ -71,21 +76,30 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         else:
             self.lineEdit.setEnabled(False)
             self.feedbackText.setText("Finished!")
+            self.gameRunning = False
 
     def processWord(self):
+        if not self.gameRunning:
+            return
         text = self.lineEdit.text()
         self.lineEdit.setText('')
         self.lineEdit.setFocus()
         if text in self.dManager.dictionary[self.word]:
             self.feedbackText.setText("Correct!")
             self.correctCount += 1
-            self.okText.setText("""<html><head/><body><p><span style=" color:#07c327;">
-                                OK: %s</span></p></body></html>""" % str(self.correctCount))
+            self.okText.setText("""<html><head/><body><p>
+                                <span style=" color:#07c327;">
+                                OK: %s
+                                </span></p></body></html>"""
+                                % str(self.correctCount))
         else:
             self.feedbackText.setText("Incorrect...")
             self.failCount += 1
-            self.failText.setText("""<html><head/><body><p><span style=" color:#bf0808;">
-                                Fails: %s</span></p></body></html>""" % str(self.failCount))
+            self.failText.setText("""<html><head/><body><p>
+                                  <span style=" color:#bf0808;">
+                                  Fails: %s
+                                  </span></p></body></html>"""
+                                  % str(self.failCount))
         if not self.endlessMode and self.wordReserve:
             self.wordReserve.remove(self.word)
         self.generateWord()
