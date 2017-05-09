@@ -46,9 +46,23 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         self.playButton.clicked.connect(self.startGame)
         self.translateButton.clicked.connect(self.processWord)
 
+    def getLanguage(self):
+        if self.sourceLangBox.currentIndex() == 1:
+            source = 'es'
+        else:
+            source = 'en'  # Default
+
+        if self.destLangBox.currentIndex() == 1:
+            dest = 'en'
+        else:
+            dest = 'es'  # Default
+
+        return source, dest
+
     def startGame(self):
         self.gameRunning = True
-        self.dManager.load(self.fileList[self.wordFileList.currentRow()])
+        self.dManager.load(self.fileList[self.wordFileList.currentRow()],
+                           *self.getLanguage())
         self.wordReserve = list(self.dManager.dictionary.keys())
         if self.endlessCheckBox.isChecked():
             self.endlessMode = True

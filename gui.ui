@@ -93,6 +93,11 @@
            <string>English</string>
           </property>
          </item>
+         <item>
+          <property name="text">
+           <string>Español</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item>
@@ -106,10 +111,15 @@
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="targetLangBox">
+        <widget class="QComboBox" name="destLangBox">
          <item>
           <property name="text">
            <string>Español</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>English</string>
           </property>
          </item>
         </widget>

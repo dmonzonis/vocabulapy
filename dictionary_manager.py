@@ -16,8 +16,12 @@ import json
 import os.path
 import pickle
 
+TRANS_URL = "https://glosbe.com/gapi/"\
+        "translate?from={}&dest={}&format=json&phrase={}"
+
+
 class DictionaryManager:
-    def __init__(self, filename = None):
+    def __init__(self, filename=None):
         self.dictionary = dict()
         if filename:
             self.load(filename)
@@ -32,10 +36,11 @@ class DictionaryManager:
             wordList[wordList.index(word)] = word.strip()
         return wordList
 
-    # Translates a word using internet API and return list of valid translations
-    def translate(self, word):
+    # Translates a word using internet API and return list of
+    # valid translations
+    def translate(self, word, sourceLang, destLang):
         translationList = []
-        url = "https://glosbe.com/gapi/translate?from=eng&dest=es&format=json&phrase=%s" % word
+        url = TRANS_URL.format(sourceLang, destLang, word)
         response = urllib.request.urlopen(url).read()
         data = json.loads(response)
         if data['result'] != 'ok':
@@ -47,23 +52,24 @@ class DictionaryManager:
         return translationList
 
     # Creates a dictionary of possible translations for given words (keys)
-    def createDict(self, wordList):
+    def createDict(self, wordList, sourceLang, destLang):
         wordDict = dict()
         listLength = len(wordList)
         print("Translating %s words, please be patient" % str(listLength))
         counter = 1
         for word in wordList:
             print("...%s/%s" % (str(counter), str(listLength)))
-            translations = self.translate(word)
+            translations = self.translate(word, sourceLang, destLang)
             wordDict[word] = translations
             counter += 1
         print("Done!")
         return wordDict
 
-    # Creates a game-ready dictionary from a CSV file containing English words, using the Glosbe API
-    # to translate them if it wasn't previously generated before and saving it for future use, or loading
+    # Creates a game-ready dictionary from a CSV file containing English
+    # words, using the Glosbe API to translate them if it wasn't
+    # previously generated before and saving it for future use, or loading
     # the previously generated one if it exists
-    def load(self, filename):
+    def load(self, filename, sourceLang, destLang):
         if not os.path.exists(filename):
             print("Could not find the word file!")
             return
@@ -73,7 +79,7 @@ class DictionaryManager:
                 self.dictionary = pickle.load(f)
                 return
         words = self.readWordList(filename)
-        wordDict = self.createDict(words)
+        wordDict = self.createDict(words, sourceLang, destLang)
         with open(dictFilename, 'wb') as f:
             pickle.dump(wordDict, f, protocol=pickle.HIGHEST_PROTOCOL)
         self.dictionary = wordDict
