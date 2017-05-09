@@ -47,6 +47,7 @@ class DictionaryManager:
             print("Error trying to translate word: %s" % word)
             return None
         for translation in data['tuc']:
+            # Translations have a 'phrase' key
             if 'phrase' in translation:
                 translationList.append(translation['phrase']['text'])
         return translationList
@@ -74,12 +75,16 @@ class DictionaryManager:
             print("Could not find the word file!")
             return
         dictFilename = filename[:filename.find('.csv')] + '.dict'
+        # If dictionary already exists, use it
         if os.path.exists(dictFilename):
             with open(dictFilename, 'rb') as f:
                 self.dictionary = pickle.load(f)
                 return
+        # Dictionary doesn't exist, create a new one
         words = self.readWordList(filename)
         wordDict = self.createDict(words, sourceLang, destLang)
+        # Save it to a file for future use
         with open(dictFilename, 'wb') as f:
             pickle.dump(wordDict, f, protocol=pickle.HIGHEST_PROTOCOL)
+
         self.dictionary = wordDict
