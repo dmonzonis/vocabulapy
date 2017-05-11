@@ -46,7 +46,6 @@ class DictionaryManager:
                                          'format': 'json',
                                          'phrase': word})
         url = GLOSBE_URL + params
-        print(url)
         response = urllib.request.urlopen(url).read()
         data = json.loads(response)
         if data['result'] != 'ok':
@@ -67,7 +66,10 @@ class DictionaryManager:
         for word in wordList:
             print("...%s/%s" % (str(counter), str(listLength)))
             translations = self.translate(word, sourceLang, destLang)
-            wordDict[word] = translations
+            if translations:
+                wordDict[word] = translations
+            else:
+                print("No translations found for {}!".format(word))
             counter += 1
         print("Done!")
         return wordDict
