@@ -40,6 +40,7 @@ class DictionaryManager:
     # valid translations
     def translate(self, word, sourceLang, destLang):
         translationList = []
+        word = word.replace(' ', '%20')
         url = TRANS_URL.format(sourceLang, destLang, word)
         response = urllib.request.urlopen(url).read()
         data = json.loads(response)
