@@ -11,13 +11,13 @@ website: github.com/monzo94
 """
 
 import urllib.request
+import urllib.parse
 import csv
 import json
 import os.path
 import pickle
 
-TRANS_URL = "https://glosbe.com/gapi/"\
-        "translate?from={}&dest={}&format=json&phrase={}"
+GLOSBE_URL = "https://glosbe.com/gapi/translate?"
 
 
 class DictionaryManager:
@@ -40,8 +40,13 @@ class DictionaryManager:
     # valid translations
     def translate(self, word, sourceLang, destLang):
         translationList = []
-        word = word.replace(' ', '%20')
-        url = TRANS_URL.format(sourceLang, destLang, word)
+        # Encode parameters for the URL
+        params = urllib.parse.urlencode({'from': sourceLang,
+                                         'dest': destLang,
+                                         'format': 'json',
+                                         'phrase': word})
+        url = GLOSBE_URL + params
+        print(url)
         response = urllib.request.urlopen(url).read()
         data = json.loads(response)
         if data['result'] != 'ok':
