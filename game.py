@@ -49,17 +49,10 @@ class GameWindow(QMainWindow, Ui_GameWindow):
     # Returns the selected languages in the menu's combo box ready to be
     # used for the Glosbe API
     def getLanguage(self):
-        if self.sourceLangBox.currentIndex() == 1:
-            source = 'es'
-        else:
-            source = 'en'  # Default
-
-        if self.destLangBox.currentIndex() == 1:
-            dest = 'en'
-        else:
-            dest = 'es'  # Default
-
-        return source, dest
+        sourceList = ['en', 'es']
+        destList = ['es', 'en']
+        return (sourceList[self.sourceLangBox.currentIndex()],
+                destList[self.destLangBox.currentIndex()])
 
     # Starts a new game. Loads the selected wordlist, building a new dictionary
     # if necessary, and sets up the settings
@@ -68,11 +61,7 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         self.dManager.load(self.fileList[self.wordFileList.currentRow()],
                            *self.getLanguage())
         self.wordReserve = list(self.dManager.dictionary.keys())
-        if self.endlessCheckBox.isChecked():
-            self.endlessMode = True
-        else:
-            self.endlessMode = False
-
+        self.endlessMode = self.endlessCheckBox.isChecked()
         self.correctCount = self.failCount = 0
         self.stack.setCurrentIndex(1)
         self.generateWord()
