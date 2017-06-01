@@ -10,17 +10,18 @@ author: Daniel Monzonis
 website: github.com/monzo94
 """
 
-import urllib.request
-import urllib.parse
 import csv
 import json
 import os.path
 import pickle
+import urllib.parse
+import urllib.request
 
 GLOSBE_URL = "https://glosbe.com/gapi/translate?"
 
 
 class DictionaryManager:
+
     def __init__(self, filename=None):
         self.dictionary = dict()
         if filename:

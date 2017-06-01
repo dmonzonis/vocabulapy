@@ -10,11 +10,13 @@ author: Daniel Monzonis
 website: github.com/monzo94
 """
 
-import sys
 import os
+import sys
 from random import choice
+
+from PyQt5.QtCore import QEvent, Qt
 from PyQt5.QtWidgets import QApplication, QMainWindow, qApp
-from PyQt5.QtCore import Qt, QEvent
+
 from dictionary_manager import DictionaryManager
 from gui import Ui_GameWindow
 
@@ -25,6 +27,7 @@ def formatFilename(filename):
 
 
 class GameWindow(QMainWindow, Ui_GameWindow):
+
     def __init__(self, window, dictionaryManager):
         QMainWindow.__init__(self)
         Ui_GameWindow.__init__(self)
