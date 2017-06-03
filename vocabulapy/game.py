@@ -11,14 +11,12 @@ website: github.com/monzo94
 """
 
 import os
-import sys
 from random import choice
 
 from PyQt5.QtCore import QEvent, Qt
-from PyQt5.QtWidgets import QApplication, QMainWindow, qApp
+from PyQt5.QtWidgets import QMainWindow, qApp
 
-from dictionary_manager import DictionaryManager
-from gui import Ui_GameWindow
+from gui.gui import Ui_GameWindow
 
 
 # Format filename for printing, ex. "basic_words.csv" to "Basic Words"
@@ -120,14 +118,3 @@ class GameWindow(QMainWindow, Ui_GameWindow):
         if not self.endlessMode and self.wordReserve:
             self.wordReserve.remove(self.word)
         self.generateWord()
-
-
-if __name__ == '__main__':
-    dManager = DictionaryManager()
-
-    app = QApplication(sys.argv)
-    window = QMainWindow()
-    game = GameWindow(window, dManager)
-
-    window.show()
-    sys.exit(app.exec_())
