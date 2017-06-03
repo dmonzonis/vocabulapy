@@ -43,7 +43,3 @@ class TestDictionaryManager(unittest.TestCase):
             # Test English to Spanish and vice versa
             self.assertIn(k, self.dictionaryManager.translate(v, 'en', 'es'))
             self.assertIn(v, self.dictionaryManager.translate(k, 'es', 'en'))
-
-
-if __name__ == "__main__":
-    unittest.main()

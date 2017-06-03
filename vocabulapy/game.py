@@ -38,7 +38,7 @@ class GameWindow(QMainWindow, Ui_GameWindow):
 
         # Find all .csv files in the directory
         self.fileList = []
-        for file in os.listdir(os.getcwd()):
+        for file in os.listdir(os.getcwd() + "/lists"):
             if file.endswith(".csv"):
                 self.fileList.append(file)
         for filename in self.fileList:
@@ -59,8 +59,10 @@ class GameWindow(QMainWindow, Ui_GameWindow):
     # if necessary, and sets up the settings
     def startGame(self):
         self.gameRunning = True
-        self.dManager.load(self.fileList[self.wordFileList.currentRow()],
-                           *self.getLanguage())
+        self.dManager.load(
+            "lists/" + self.fileList[self.wordFileList.currentRow()],
+            *self.getLanguage()
+        )
         self.wordReserve = list(self.dManager.dictionary.keys())
         self.endlessMode = self.endlessCheckBox.isChecked()
         self.correctCount = self.failCount = 0
